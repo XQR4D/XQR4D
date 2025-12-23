@@ -1,5 +1,5 @@
 # Web VisitCard
-- https://xqr4d.github.io/bipbup/start.html
+- https://xqr4d.github.io/XQR4D/
 
 ## Social
 - Telegram [@balenciaga_telegram](https://t.me/balenciaga_telegram)
