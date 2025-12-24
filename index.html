@@ -13,32 +13,123 @@
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&display=swap');
-        body { font-family: 'Unbounded', sans-serif; background-color: #030005; color: white; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        @keyframes orbit {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0, 0) scale(1); }
+        :root {
+            --bg-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --blob-1: #94a3b8;
+            --blob-2: #cbd5e1;
+            --nav-bg: rgba(248, 250, 252, 0.85);
+            --accent: #1e293b;
+            --accent-text: #ffffff;
         }
-        .animate-orbit { animation: orbit 15s infinite ease-in-out; }
-        
+
+        .dark {
+            --bg-color: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.4);
+            --glass-border: rgba(51, 65, 85, 0.5);
+            --blob-1: #1e293b;
+            --blob-2: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.85);
+            --accent: #f1f5f9;
+            --accent-text: #0f172a;
+        }
+
+        body { 
+            font-family: 'Unbounded', sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-main); 
+            overflow-x: hidden;
+            width: 100%;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .liquid-container {
+            filter: url('#goo');
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .liquid-blob {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blob-1), var(--blob-2));
+            filter: blur(10px);
+            animation: liquidOrbit 20s infinite ease-in-out;
+            transition: background 0.5s ease;
+        }
+
+        @keyframes liquidOrbit {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(100px, 80px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .glass { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease;
+            color: var(--text-main);
+        }
+
+        .text-main-color { color: var(--text-main); }
+        .text-muted-color { color: var(--text-muted); }
+
         .text-outline {
-            -webkit-text-stroke: 2px rgba(255,255,255,0.3);
+            -webkit-text-stroke: 1px var(--text-muted);
             color: transparent;
             transition: all 0.5s;
         }
+        
+        @media (min-width: 768px) {
+            .text-outline { -webkit-text-stroke: 2px var(--text-muted); }
+        }
+
         .text-outline:hover {
-            -webkit-text-stroke: 2px #f5f5f5;
-            filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.5));
+            -webkit-text-stroke: 1px var(--text-main);
+        }
+
+        .nav-glass {
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--accent-text);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-main);
         }
     </style>
 </head>
 <body>
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0">
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 40 -15" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+
     <div id="root"></div>
 
     <script type="text/babel">
@@ -47,89 +138,161 @@
 
         const App = () => {
             const [activeTab, setActiveTab] = useState('home');
+            const [darkMode, setDarkMode] = useState(false);
+
+            useEffect(() => {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setDarkMode(isDark);
+
+                const listener = (e) => setDarkMode(e.matches);
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', listener);
+                return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', listener);
+            }, []);
+
+            useEffect(() => {
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [darkMode]);
+
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                }, 50);
+                return () => clearTimeout(timer);
+            }, [activeTab, darkMode]);
+
+            const paymentMethods = [
+                { name: 'USDT', iconPath: 'usdt.svg' },
+                { name: 'BITCOIN', iconPath: 'bitcoin.svg' },
+                { name: 'TON', iconPath: 'ton.svg' },
+                { name: 'СБП', iconPath: 'sbp.png' },
+                { name: 'SHIBA', iconPath: 'shibainu.svg' },
+                { name: 'TRON', iconPath: 'trontrx.svg' },
+                { name: 'LITECOIN', iconPath: 'litecoin.svg' }
+            ];
 
             const services = [
-                { id: '1', title: 'Python bot + n8n', price: 'от 5.000 рублей' },
-                { id: '2', title: 'Frontend + Backend', price: 'от 20.000 рублей' },
-                { id: '3', title: 'Работа с API', price: 'от 6.000 рублей' },
-                { id: '4', title: 'SQL Database автоматизация', price: 'от 15.000 рублей' },
-                { id: '5', title: 'Настройка автоматизации Excel', price: 'от 9.000 рублей' },
-                { id: '6', title: 'Разработка Discord серверов под ключ', price: 'от 6.000 рублей' },
-                { id: '7', title: 'Создание и настройка Telegram каналов', price: 'от 6.000 рублей' },
-                { id: '8', title: 'Администрирование OZON Seller', price: 'от 50.000 рублей' },
-                { id: '9', title: 'Создание карточек маркетплейсов', price: 'от 15.000 рублей' },
-                { id: '10', title: 'Дизайн UI/UX (Photoshop)', price: 'от 15.000 рублей' },
-                { id: '11', title: 'Дизайн-паки для групп/ботов', price: 'от 15.000 рублей' },
-                { id: '12', title: 'Адаптация стикеров Telegram', price: 'от 5.000 рублей' },
-                { id: '13', title: 'Нелинейный монтаж видео', price: 'от 15.000 рублей' },
-                { id: '14', title: 'Индивидуальные проекты', price: 'от 3.000 рублей' },
-                { id: '15', title: 'Помощь с практиками', price: 'от 13.000 рублей' },
-                { id: '16', title: 'Дипломные работы', price: 'от 20.000 рублей' },
-                { id: '17', title: 'Курсовые работы', price: 'от 10.000 рублей' },
+                { id: '1', title: 'Python bot + n8n', price: 'от 5.000 ₽', description: 'Разработка Telegram ботов с интеграцией через n8n для автоматизации бизнес-процессов.' },
+                { id: '2', title: 'Frontend + Backend', price: 'от 20.000 ₽', description: 'Комплексная разработка веб-сайта: от интерфейса до серверной логики.' },
+                { id: '3', title: 'Работа с API', price: 'от 6.000 ₽', description: 'Интеграция сторонних сервисов и создание собственных API-решений.' },
+                { id: '4', title: 'SQL Database автоматизация', price: 'от 15.000 ₽', description: 'Проектирование баз данных и настройка автоматических сценариев обработки данных.' },
+                { id: '5', title: 'Настройка автоматизации Excel', price: 'от 9.000 ₽', description: 'Создание сложных макросов и скриптов для работы с таблицами.' },
+                { id: '6', title: 'Разработка Discord серверов под ключ', price: 'от 6.000 ₽', description: 'Полная настройка каналов, ролей, прав и необходимых ботов.' },
+                { id: '7', title: 'Создание и настройка Telegram каналов', price: 'от 6.000 ₽', description: 'Оформление, подключение ботов-администраторов и настройка контент-плана.' },
+                { id: '8', title: 'Администрирование OZON Seller', price: 'от 50.000 ₽', description: 'Полное ведение личного кабинета, работа с заказами и отчетностью.' },
+                { id: '9', title: 'Создание карточек маркетплейсов', price: 'от 15.000 ₽', description: 'SEO-оптимизированное описание и подготовка контента для товаров.' },
+                { id: '10', title: 'Дизайн UI/UX (Photoshop)', price: 'от 15.000 ₽', description: 'Проектирование удобных и современных интерфейсов для сайтов и приложений.' },
+                { id: '11', title: 'Дизайн-паки для групп/ботов', price: 'от 15.000 ₽', description: 'Единый стиль оформления: аватары, баннеры, меню.' },
+                { id: '12', title: 'Адаптация стикеров Telegram', price: 'от 5.000 ₽', description: 'Перенос и отрисовка стикерпаков под формат Telegram.' },
+                { id: '13', title: 'Нелинейный монтаж видео', price: 'от 15.000 ₽', description: 'Профессиональная склейка, цветокоррекция и наложение эффектов.' },
+                { id: '14', title: 'Индивидуальные проекты', price: 'от 3.000 ₽', description: 'Помощь в создании, корректировке или доработке проектов.' },
+                { id: '15', title: 'Помощь с практиками', price: 'от 13.000 ₽', description: 'Консультации, онлайн помощь или корректировка практических работ' },
+                { id: '16', title: 'Дипломные работы', price: 'от 20.000 ₽', description: 'Полное сопровождение: от базовых документов до пояснительной записки.' },
+                { id: '17', title: 'Курсовые работы', price: 'от 10.000 ₽', description: 'Качественное выполнение академических работ по техническим дисциплинам.' },
             ];
 
             const repos = [
-                { name: 'sellaccmarket (private)', url: 'https://github.com/XQR4D/sellaccmarket', stack: 'Python, SQL, API', desc: 'Бот Telegram по продаже аккаунтов, скинов и т.д' },
-                { name: 'bipbup', url: 'https://github.com/XQR4D/bipbup', stack: 'JavaScript, API Integration, Node.JS, HTML, Python', desc: 'Вебсайт для блоггера BIPBUP (60k+)' },
-                { name: 'kort', url: 'https://github.com/XQR4D/kort', stack: 'JavaScript, Yandex JS Integration, Vector Map, HTML', desc: 'Коммерческий вебсайт для лизинговой организации' },
-                { name: 'Nebula', url: 'https://github.com/XQR4D/Nebula', stack: 'JavaScript, HTML, Github API, Python', desc: '8-битный веб-плеер для просмотра роликов блоггера BIPBUP' },
-                { name: 'Sonar', url: 'https://github.com/XQR4D/Sonar', stack: 'JavaScript, HTML, Github API, Python, sh', desc: 'Open-Source плеер для загрузки, просмотра, скачивания видео' },
-                { name: 'MailRuAdBlockPlus', url: 'https://github.com/XQR4D/MailRuAdBlockPlus', stack: 'JS, Chrome Dev Tools, HTML', desc: 'Блокировщик рекламы и оптимизатор для сервисов Mail.ru.' },
-                { name: 'Pomodoro Timer', url: 'https://github.com/XQR4D/Pomodoro', stack: 'JavaScript, HTML, Github API, CSS', desc: 'Таймер помодоро для одноименной методики' }
+                { name: 'accountmarketbot', url: 'https://github.com/XQR4D/accountmarketbot', stack: 'Python, SQL, API, JSON', desc: 'Бот Telegram по продаже аккаунтов, скинов и т.д' },
+                { name: 'bipbup', url: 'https://github.com/XQR4D/bipbup', stack: 'JavaScript, API Integration, Node.JS, HTML, Python, CSS', desc: 'Вебсайт для блоггера BIPBUP (60k+)' },
+                { name: 'kort', url: 'https://github.com/XQR4D/kort', stack: 'JavaScript, Yandex JS Integration, Vector Map, HTML, CSS', desc: 'Коммерческий вебсайт для лизинговой организации' },
+                { name: 'Nebula', url: 'https://github.com/XQR4D/Nebula', stack: 'JavaScript, HTML, Github API, Python, CSS', desc: '8-битный веб-плеер для просмотра роликов блоггера BIPBUP' },
+                { name: 'Sonar', url: 'https://github.com/XQR4D/Sonar', stack: 'JavaScript, HTML, Github API, Python, sh, CSS', desc: 'Open-Source плеер для загрузки, просмотра, скачивания видео' },
+                { name: 'MailRuAdBlockPlus', url: 'https://github.com/XQR4D/MailRuAdBlockPlus', stack: 'JS, Chrome Dev Tools, HTML, CSS', desc: 'Блокировщик рекламы и оптимизатор для сервисов Mail.ru.' },
+                { name: 'Pomodoro Timer', url: 'https://github.com/XQR4D/Pomodoro', stack: 'JavaScript, HTML, Github API, CSS', desc: 'Таймер помодоро для одноименной методики' },
+                { name: 'XQR4D Website', url: 'https://github.com/XQR4D/XQR4D', stack: 'JavaScript, HTML, Github API, CSS, React, Tailwind', desc: 'Персональный сайт-портфолио' }
             ];
 
-            const mainSkills = ['JavaScript (Middle++)', 'HTML (Senior)', 'CSS5/3 (Middle++)', 'React (Learn)', 'C# (Learn)', 'C++ (Junior)', 'Typescript (Learn)', 'Python (Middle)', 'Node.js (Learn)', 'Git (Middle)', 'Tailwind (Learn)'];
-            
-            const extraSkills = ['MS Word (Middle)', 'MS PowerPoint (Senior)', 'MS Excel + SQL Database (Middle)', 'MS Visio (Middle+)', 'MS Access (Middle)', 'Adobe Photoshop (Middle)', 'Adobe Illustrator (Junior+)', 'Capcut (Middle+)', 'Adobe LrC (Middle+)', 'Assembler (Junior+)', 'Pascal (Middle)', 'Cisco Packet Tracer (Middle)'];
+            const mainSkillsGrouped = {
+                'Senior': ['HTML'],
+                'Middle++': ['JavaScript', 'CSS5/3'],
+                'Middle': ['Python', 'Git'],
+                'Learning': ['React', 'Node.js', 'Tailwind', 'Typescript', 'C#'],
+                'Junior': ['C++']
+            };
 
-            useEffect(() => { 
-                if (window.lucide) window.lucide.createIcons(); 
-            }, [activeTab]);
+            const extraSkillsGrouped = {
+                'Advanced': ['MS Word', 'MS PowerPoint', 'Adobe Photoshop', 'Adobe Illustrator', 'Cisco Packet Tracer'],
+                'Core': ['MS Excel + SQL', 'MS Visio', 'MS Access', 'Capcut', 'Adobe LrC'],
+                'Legacy': ['Assembler', 'Pascal']
+            };
+
+            const instruments = ['MS Word', 'MS PowerPoint', 'MS Excel', 'SQL Database', 'MS Visio', 'MS Access', 'Adobe Photoshop', 'Adobe Illustrator', 'Capcut', 'Adobe LrC', 'Assembler', 'Pascal ABC', 'Cisco Packet Tracer', 'Discord PTB', 'Telegram DevTools', 'Telegram for Delevopers', 'GIT', 'Github Desktop', 'Cursor IDE', 'Visual Studio Code', 'Visual Studio Code Insiders', 'Python 3.13', 'Docker', 'Obsidian', 'OZON Seller', 'OZON API', 'VK API', 'Adobe Premiere Pro', 'n8n Automation Platform'];
 
             return (
-                <div className="min-h-screen relative">
-                    <div className="fixed inset-0 pointer-events-none z-0">
-                        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[140px] animate-orbit"></div>
-                        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-fuchsia-600/15 rounded-full blur-[140px] animate-orbit shadow-inner"></div>
+                <div className="min-h-screen relative flex flex-col transition-colors duration-500">
+                    <div className="liquid-container">
+                        <div className="liquid-blob w-[300px] h-[300px] top-[10%] left-[20%]" style={{animationDelay: '0s'}}></div>
+                        <div className="liquid-blob w-[400px] h-[400px] top-[40%] left-[50%]" style={{animationDelay: '-5s'}}></div>
+                        <div className="liquid-blob w-[250px] h-[250px] bottom-[10%] right-[20%]" style={{animationDelay: '-10s'}}></div>
                     </div>
 
-                    <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 p-1 rounded-full glass bg-black/80 border border-white/20">
+                    <nav className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 p-1 rounded-full nav-glass w-[95%] md:w-auto flex items-center">
                         <div className="flex relative">
                             {['home', 'about', 'services', 'portfolio'].map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`relative z-10 px-4 md:px-6 py-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors duration-500 ${activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                                    className={`relative z-10 flex-1 md:flex-none px-3 md:px-6 py-2.5 text-[9px] md:text-[11px] font-bold uppercase tracking-wider transition-colors duration-500 ${activeTab === tab ? 'text-[var(--accent-text)]' : 'text-muted-color hover:text-main-color'}`}
                                 >
                                     {tab === 'home' ? 'Главная' : tab === 'about' ? 'Обо мне' : tab === 'services' ? 'Услуги' : 'Портфолио'}
                                     {activeTab === tab && (
                                         <motion.div 
                                             layoutId="nav-bg"
-                                            className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full -z-10 shadow-[0_0_15px_rgba(147,51,234,0.5)]"
+                                            className="absolute inset-0 btn-primary rounded-full -z-10 shadow-sm"
                                             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                         />
                                     )}
                                 </button>
                             ))}
                         </div>
+                        <button 
+                            onClick={() => setDarkMode(!darkMode)}
+                            className="p-2.5 text-muted-color hover:text-main-color transition-colors"
+                        >
+                            <i data-lucide={darkMode ? "sun" : "moon"} size="16"></i>
+                        </button>
                     </nav>
 
-                    <main className="relative z-10 pt-32 pb-20 px-6 max-w-6xl mx-auto">
+                    <main className="relative z-10 pt-28 md:pt-32 pb-20 px-4 md:px-6 max-w-6xl mx-auto w-full">
                         <AnimatePresence mode="wait">
                             
                             {activeTab === 'home' && (
                                 <motion.section 
                                     key="home"
-                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                                     className="flex flex-col items-center justify-center min-h-[60vh] text-center"
                                 >
-                                    <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter mb-10 leading-none">
+                                    <h1 className="text-6xl md:text-[10rem] font-black tracking-tighter mb-10 leading-none">
                                         <span className="block text-outline uppercase">XQR4D</span>
                                     </h1>
-                                    <a href="https://github.com/XQR4D" target="_blank" className="flex items-center gap-3 px-10 py-5 rounded-2xl bg-white text-black font-black hover:bg-purple-100 transition-all active:scale-95 shadow-[0_10px_40px_rgba(255,255,255,0.1)]">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                        <span>GITHUB PROFILE</span>
-                                    </a>
+
+                                    <div className="flex flex-col items-center gap-12">
+                                        <a href="https://github.com/XQR4D" target="_blank" className="flex items-center gap-3 px-8 py-4 md:py-5 rounded-2xl btn-primary text-xs md:text-sm font-black hover:opacity-90 transition-all active:scale-95 shadow-lg">
+                                            <svg width="20" height="20" className="md:w-6 md:h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                            <span>GITHUB PROFILE</span>
+                                        </a>
+
+                                        <div className="flex flex-col items-center gap-6">
+                                            <span className="text-[10px] md:text-[12px] font-black tracking-[0.3em] text-muted-color uppercase opacity-70">
+                                                Доступные способы оплаты
+                                            </span>
+                                            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 opacity-60 text-main-color">
+                                                {paymentMethods.map(pay => (
+                                                    <div key={pay.name} className="flex flex-col items-center gap-2">
+                                                        <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center grayscale brightness-50 dark:grayscale-0 dark:brightness-100">
+                                                            <img src={pay.iconPath} alt={pay.name} className="w-full h-full object-contain" />
+                                                        </div>
+                                                        <span className="text-[9px] md:text-[10px] font-black tracking-[0.2em]">{pay.name}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </motion.section>
                             )}
 
@@ -137,48 +300,60 @@
                                 <motion.section 
                                     key="about"
                                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                                    className="grid md:grid-cols-2 gap-6"
+                                    className="grid md:grid-cols-2 gap-4 md:gap-6"
                                 >
-                                    <div className="glass p-8 rounded-3xl border-purple-500/20">
-                                        <h2 className="text-3xl font-bold mb-8 text-purple-400">Личное</h2>
-                                        <div className="space-y-6 text-gray-200">
-                                            <div>
-                                                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Возраст</p>
-                                                <p className="text-lg font-bold">25 лет</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Опыт</p>
-                                                <p className="text-lg font-bold">5 лет + 3 года изучения</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Активность</p>
-                                                <p className="text-lg font-bold">Сейчас сфокусирован на изучении React и Node.JS</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Соц.сети</p>
-                                                <p className="text-lg font-bold">@XQR4D, @balenciaga_telegram</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Почта для связи</p>
-                                                <p className="text-lg font-bold">frozenjuggernaut@gmail.com</p>
-                                            </div>
+                                    <div className="glass p-6 md:p-8 rounded-3xl">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tight">Личное</h2>
+                                        <div className="space-y-5 md:space-y-6">
+                                            {['Возраст', 'Опыт', 'Специализация', 'Соц.сети', 'Почта'].map((label, idx) => {
+                                                const vals = ['25 лет', '5 лет', 'Frontend/Backend', '@XQR4D, @balenciaga_telegram', 'frozenjuggernaut@gmail.com'];
+                                                return (
+                                                    <div key={label}>
+                                                        <p className="text-[10px] uppercase tracking-widest text-muted-color mb-1 font-black">{label}</p>
+                                                        <p className="text-base md:text-lg font-bold break-all">{vals[idx]}</p>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
 
-                                    <div className="glass p-8 rounded-3xl border-blue-500/20">
-                                        <h2 className="text-3xl font-bold mb-8 text-blue-400">Основной опыт</h2>
-                                        <div className="flex flex-wrap gap-3">
-                                            {mainSkills.map(s => (
-                                                <span key={s} className="px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-xs font-bold hover:border-blue-500 transition-colors">{s}</span>
+                                    <div className="glass p-6 md:p-8 rounded-3xl">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tight">Скиллы</h2>
+                                        <div className="grid grid-cols-1 gap-6">
+                                            {Object.entries(mainSkillsGrouped).map(([level, skills]) => (
+                                                <div key={level}>
+                                                    <h3 className="text-[10px] uppercase tracking-widest text-muted-color mb-2 font-black">{level}</h3>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {skills.map(s => (
+                                                            <span key={s} className="px-3 py-1 bg-white/50 dark:bg-slate-800/50 border border-glass-border rounded-lg text-[10px] md:text-xs font-bold shadow-sm">{s}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="glass p-8 rounded-3xl border-white/10 md:col-span-2">
-                                        <h2 className="text-3xl font-bold mb-8 text-indigo-400">Дополнительный опыт</h2>
-                                        <div className="flex flex-wrap gap-3">
-                                            {extraSkills.map(s => (
-                                                <span key={s} className="px-4 py-2 bg-black/40 border border-white/10 rounded-xl text-xs font-bold hover:border-indigo-500 transition-colors">{s}</span>
+                                    <div className="glass p-6 md:p-8 rounded-3xl md:col-span-1">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tight">Доп. скиллы</h2>
+                                        <div className="grid grid-cols-1 gap-6">
+                                            {Object.entries(extraSkillsGrouped).map(([level, skills]) => (
+                                                <div key={level}>
+                                                    <h3 className="text-[10px] uppercase tracking-widest text-muted-color mb-2 font-black">{level}</h3>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {skills.map(s => (
+                                                            <span key={s} className="px-3 py-1 bg-white/50 dark:bg-slate-800/50 border border-glass-border rounded-lg text-[10px] md:text-xs font-bold shadow-sm">{s}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="glass p-6 md:p-8 rounded-3xl md:col-span-1">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tight">Инструменты</h2>
+                                        <div className="flex flex-wrap gap-2 md:gap-3">
+                                            {instruments.map(s => (
+                                                <span key={s} className="px-3 py-1.5 bg-white/50 dark:bg-slate-800/50 border border-glass-border rounded-lg text-[10px] md:text-xs font-bold shadow-sm">{s}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -186,21 +361,36 @@
                             )}
 
                             {activeTab === 'services' && (
-                                <motion.section key="services" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto">
-                                    <div className="flex justify-between items-center mb-8">
-                                        <h2 className="text-2xl font-black">Услуги</h2>
-                                        <button onClick={() => setActiveTab('portfolio')} className="text-purple-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold underline decoration-purple-500/50">
-                                            СМОТРЕТЬ ПОРТФОЛИО <i data-lucide="external-link" size="14"></i>
+                                <motion.section key="services" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto w-full">
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                                        <h2 className="text-2xl font-black uppercase">Услуги</h2>
+                                        <button onClick={() => setActiveTab('portfolio')} className="text-muted-color hover:text-main-color transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest group">
+                                            <i data-lucide="folder-open" size="16"></i> <span>ПОРТФОЛИО</span>
                                         </button>
                                     </div>
-                                    <div className="grid gap-3">
+                                    <div className="grid gap-4">
                                         {services.map(s => (
-                                            <div key={s.id} className="glass p-6 rounded-2xl flex justify-between items-center hover:bg-white/5 transition-all group">
-                                                <div>
-                                                    <h3 className="font-bold text-gray-200 group-hover:text-white">{s.title}</h3>
-                                                    <p className="text-purple-500 font-black text-sm mt-1 uppercase">{s.price}</p>
+                                            <div key={s.id} className="glass p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-white/80 dark:hover:bg-slate-800/60 transition-all group gap-6">
+                                                <div className="flex-grow">
+                                                    <h3 className="font-black text-sm md:text-lg uppercase tracking-tight">{s.title}</h3>
+                                                    <p className="text-muted-color text-[10px] md:text-xs mt-2 mb-3 leading-relaxed font-medium">{s.description}</p>
+                                                    <p className="font-black text-[10px] md:text-xs uppercase tracking-wider">{s.price}</p>
                                                 </div>
-                                                <a href={`mailto:frozenjuggernaut@gmail.com?subject=Заказ: ${s.title}`} className="bg-white text-black px-6 py-2 rounded-xl font-black text-[10px] hover:bg-purple-600 hover:text-white transition-all">ЗАКАЗАТЬ</a>
+                                                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                                                    <a 
+                                                        href={`mailto:frozenjuggernaut@gmail.com?subject=Заказ услуги: ${encodeURIComponent(s.title)}`}
+                                                        className="flex-1 md:flex-none text-center btn-outline px-4 py-3 rounded-xl font-black text-[9px] hover:opacity-80 transition-all uppercase shadow-sm"
+                                                    >
+                                                        Email
+                                                    </a>
+                                                    <a 
+                                                        href="https://t.me/balenciaga_telegram" 
+                                                        target="_blank" 
+                                                        className="flex-1 md:flex-none text-center btn-primary px-4 py-3 rounded-xl font-black text-[9px] hover:opacity-90 transition-all uppercase shadow-md"
+                                                    >
+                                                        Telegram
+                                                    </a>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -208,20 +398,20 @@
                             )}
 
                             {activeTab === 'portfolio' && (
-                                <motion.section key="portfolio" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="grid md:grid-cols-2 gap-6">
+                                <motion.section key="portfolio" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="grid md:grid-cols-2 gap-4 md:gap-6">
                                     {repos.map((repo, i) => (
-                                        <a key={i} href={repo.url} target="_blank" className="glass p-8 rounded-[2rem] hover:border-purple-500/50 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[200px]">
+                                        <a key={i} href={repo.url} target="_blank" className="glass p-6 md:p-8 rounded-[2rem] hover:border-slate-400 transition-all group flex flex-col justify-between min-h-[180px]">
                                             <div>
                                                 <div className="flex justify-between items-start mb-4">
-                                                    <i data-lucide="folder-git-2" className="text-purple-500"></i>
-                                                    <i data-lucide="github" size="18" className="opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                                                    <i data-lucide="folder-git-2" className="text-muted-color"></i>
+                                                    <i data-lucide="external-link" size="18" className="text-muted-color group-hover:text-main-color"></i>
                                                 </div>
-                                                <h3 className="text-xl font-black mb-2 group-hover:text-purple-400 transition-colors uppercase">{repo.name}</h3>
-                                                <p className="text-gray-400 text-xs leading-relaxed">{repo.desc}</p>
+                                                <h3 className="text-lg md:text-xl font-black mb-2 uppercase">{repo.name}</h3>
+                                                <p className="text-muted-color text-[10px] md:text-xs leading-relaxed font-medium">{repo.desc}</p>
                                             </div>
                                             <div className="mt-6 flex items-center gap-2">
-                                                <div className="h-[1px] flex-grow bg-white/10"></div>
-                                                <span className="text-[10px] font-black text-purple-400 px-3 py-1 bg-purple-500/10 rounded-lg border border-purple-500/20">{repo.stack}</span>
+                                                <div className="h-[1px] flex-grow bg-glass-border"></div>
+                                                <span className="text-[9px] font-black text-muted-color px-3 py-1 bg-white/30 dark:bg-black/20 rounded-lg">{repo.stack}</span>
                                             </div>
                                         </a>
                                     ))}
