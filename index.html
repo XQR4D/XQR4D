@@ -209,11 +209,10 @@
             ];
 
             const mainSkillsGrouped = {
-                'Senior': ['HTML'],
-                'Middle++': ['JavaScript', 'CSS5/3'],
+                'Senior': ['HTML', 'JavaScript', 'CSS5/3'],
                 'Middle': ['Python', 'Git'],
-                'Learning': ['React', 'Node.js', 'Tailwind', 'Typescript', 'C#'],
-                'Junior': ['C++']
+                'Junior': ['C++', 'React', 'Tailwind'],
+                'Learning': ['Node.js', 'Typescript', 'C#']
             };
 
             const extraSkillsGrouped = {
@@ -222,7 +221,7 @@
                 'Legacy': ['Assembler', 'Pascal']
             };
 
-            const instruments = ['MS Word', 'MS PowerPoint', 'MS Excel', 'SQL Database', 'MS Visio', 'MS Access', 'Adobe Photoshop', 'Adobe Illustrator', 'Capcut', 'Adobe LrC', 'Assembler', 'Pascal ABC', 'Cisco Packet Tracer', 'Discord PTB', 'Telegram DevTools', 'Telegram for Delevopers', 'GIT', 'Github Desktop', 'Cursor IDE', 'Visual Studio Code', 'Visual Studio Code Insiders', 'Python 3.13', 'Docker', 'Obsidian', 'OZON Seller', 'OZON API', 'VK API', 'Adobe Premiere Pro', 'n8n Automation Platform'];
+            const instruments = ['MS Word', 'MS PowerPoint', 'MS Excel', 'SQL Database', 'MS Visio', 'MS Access', 'Adobe Photoshop', 'Adobe Illustrator', 'Capcut', 'Adobe LrC', 'Assembler', 'Pascal ABC', 'Cisco Packet Tracer', 'Discord PTB', 'Telegram DevTools', 'Telegram for Delevopers', 'GIT', 'Github Desktop', 'Cursor IDE', 'Visual Studio Code', 'Visual Studio Code Insiders', 'Python 3.13', 'Docker', 'Obsidian', 'OZON Seller', 'OZON API', 'VK API', 'Adobe Premiere Pro', 'n8n Automation Platform', 'OpenIV', 'JPEXS Decompiler'];
 
             return (
                 <div className="min-h-screen relative flex flex-col transition-colors duration-500">
@@ -306,8 +305,8 @@
                                     <div className="glass p-6 md:p-8 rounded-3xl">
                                         <h2 className="text-2xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tight">Личное</h2>
                                         <div className="space-y-5 md:space-y-6">
-                                            {['Языки', 'Опыт', 'Специализация', 'Соц.сети', 'Почта'].map((label, idx) => {
-                                                const vals = ['EN, RU, DE, FR', '5 лет', 'Frontend/Backend', '@XQR4D, @balenciaga_telegram', 'frozenjuggernaut@gmail.com'];
+                                            {['Языки', 'Изучаемые языки', 'Опыт', 'Специализация', 'Соц.сети', 'Почта'].map((label, idx) => {
+                                                const vals = ['EN, RU, DE, FR', 'JP, KR', '5 лет', 'Frontend, Python', '@XQR4D, @balenciaga_telegram', 'frozenjuggernaut@gmail.com'];
                                                 return (
                                                     <div key={label}>
                                                         <p className="text-[10px] uppercase tracking-widest text-muted-color mb-1 font-black">{label}</p>
