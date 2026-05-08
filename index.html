@@ -334,7 +334,7 @@
             url: 'https://github.com/XQR4D/bipbup',
             stack:
               'JavaScript, HTML, Github API, CSS, React, Tailwind, Python, Google API, ROCS proxy',
-            desc: 'Вебсайт для блоггера BIPBUP (60k+)',
+            desc: 'Вебсайт для блоггера BIPBUP (70k+)',
           },
           {
             name: 'kort',
@@ -343,10 +343,10 @@
             desc: 'Коммерческий вебсайт для лизинговой организации',
           },
           {
-            name: 'Nebula',
-            url: 'https://github.com/XQR4D/Nebula',
+            name: 'Hinata',
+            url: 'https://github.com/XQR4D/Hinata',
             stack: 'JavaScript, HTML, Github API, Python, CSS',
-            desc: '8-битный веб-плеер для просмотра роликов блоггера BIPBUP',
+            desc: 'Веб-плеер для просмотра роликов блоггера BIPBUP',
           },
           {
             name: 'Sonar',
@@ -367,7 +367,7 @@
             desc: 'Таймер помодоро для одноименной методики',
           },
           {
-            name: 'XQR4D Website',
+            name: 'XQR4D Website (Вы сейчас тут)',
             url: 'https://github.com/XQR4D/XQR4D',
             stack: 'JavaScript, HTML, Github API, CSS, React, Tailwind',
             desc: 'Персональный сайт-портфолио',
@@ -437,6 +437,11 @@
           'n8n Automation Platform',
           'OpenIV',
           'JPEXS Decompiler',
+          'Thron (Proxy Client)',
+          'Claude AI',
+          'Lovable',
+          'Nano Banana',
+          'ChatGPT Excel Extensions',
         ];
 
         return (
@@ -568,32 +573,105 @@
                       </h2>
                       <div className="space-y-5 md:space-y-6">
                         {[
-                          'Языки',
-                          'Изучаемые языки',
-                          'Опыт',
-                          'Специализация',
-                          'Соц.сети',
-                          'Почта',
-                        ].map((label, idx) => {
-                          const vals = [
-                            'EN, RU, DE, FR',
-                            'JP, KR',
-                            '5 лет',
-                            'Frontend, Python',
-                            '@XQR4D, @balenciaga_telegram',
-                            'frozenjuggernaut@gmail.com',
-                          ];
-                          return (
-                            <div key={label}>
-                              <p className="text-[10px] uppercase tracking-widest text-muted-color mb-1 font-black">
-                                {label}
-                              </p>
-                              <p className="text-base md:text-lg font-bold break-all">
-                                {vals[idx]}
-                              </p>
-                            </div>
-                          );
-                        })}
+                          { label: 'Языки', val: 'EN, RU, DE, FR' },
+                          { label: 'Изучаемые языки', val: 'JP, KR' },
+                          { label: 'Опыт', val: '5 лет' },
+                          { label: 'Специализация', val: 'Frontend, Python' },
+                          { label: 'Почта', val: 'frozenjuggernaut@gmail.com' },
+                        ].map(({ label, val }) => (
+                          <div key={label}>
+                            <p className="text-[10px] uppercase tracking-widest text-muted-color mb-1 font-black">
+                              {label}
+                            </p>
+                            <p className="text-base md:text-lg font-bold break-all">
+                              {val}
+                            </p>
+                          </div>
+                        ))}
+
+                        <div>
+                          <p className="text-[10px] uppercase tracking-widest text-muted-color mb-3 font-black">
+                            Соц.сети
+                          </p>
+                          <div className="flex flex-wrap gap-3">
+                            {[
+                              {
+                                name: 'Telegram',
+                                href: 'https://t.me/balenciaga_telegram',
+                                color: '#2AABEE',
+                                icon: (
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    width="18"
+                                    height="18"
+                                  >
+                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                                  </svg>
+                                ),
+                              },
+                              {
+                                name: 'GitHub',
+                                href: 'https://github.com/XQR4D',
+                                color: '#ffffff',
+                                icon: (
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    width="18"
+                                    height="18"
+                                  >
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                  </svg>
+                                ),
+                              },
+                              {
+                                name: 'Pinterest',
+                                href: 'https://jp.pinterest.com/XQR4D/',
+                                color: '#BD081C',
+                                icon: (
+                                  <svg
+                                    width="18px"
+                                    height="18px"
+                                    viewBox="0 0 48 48"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <circle
+                                      cx="24"
+                                      cy="24"
+                                      r="20"
+                                      fill="#BD081C"
+                                    />
+                                    <path
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M24.8523 12C18.3024 12 15 16.6959 15 20.6118C15 22.9826 15.8978 25.0924 17.8231 25.8777C18.1389 26.0067 18.4216 25.8822 18.5131 25.5327C18.5769 25.2905 18.7276 24.6799 18.7944 24.4257C18.8866 24.0799 18.8506 23.9592 18.5956 23.6577C18.0406 23.0029 17.6858 22.1553 17.6858 20.9546C17.6858 17.4699 20.2929 14.3513 24.4736 14.3513C28.1757 14.3513 30.2098 16.6141 30.2098 19.6345C30.2098 23.6096 28.4502 26.9645 25.8394 26.9645C24.3971 26.9645 23.3178 25.7712 23.6636 24.3087C24.0776 22.5626 24.8808 20.6771 24.8808 19.417C24.8808 18.289 24.2748 17.3477 23.0215 17.3477C21.547 17.3477 20.3627 18.8725 20.3627 20.9156C20.3627 22.2169 20.8022 23.0974 20.8022 23.0974C20.8022 23.0974 19.2931 29.4899 19.0291 30.6097C18.5026 32.8395 18.9504 35.5726 18.9879 35.8486C19.0104 36.0121 19.2204 36.0511 19.3156 35.9266C19.4514 35.7496 21.2072 33.5812 21.8042 31.4152C21.973 30.8024 22.774 27.6261 22.774 27.6261C23.2525 28.5396 24.6528 29.3444 26.1416 29.3444C30.5735 29.3444 33.5796 25.304 33.5796 19.8955C33.5796 15.8079 30.1168 12 24.8523 12Z"
+                                      fill="white"
+                                    />
+                                  </svg>
+                                ),
+                              },
+                            ].map(({ name, href, color, icon }) => (
+                              <a
+                                key={name}
+                                href={href || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={name}
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl font-bold text-[11px] tracking-wide transition-all hover:scale-105 active:scale-95"
+                                style={{
+                                  background: 'rgba(255,255,255,0.07)',
+                                  border: '1px solid rgba(255,255,255,0.12)',
+                                  color: color,
+                                }}
+                              >
+                                {icon}
+                                {name}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
